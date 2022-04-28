@@ -2,7 +2,7 @@
 
 This is a short example to demostrate the usage of web3 with golang
 
-#### Commands 
+#### Blockchain Commands 
 
 Solidity contract to ABI
 
@@ -14,3 +14,8 @@ ABI to GO package
 ```bash
 abigen --abi contracts/Example.abi --pkg example --out example.go
 ```
+
+#### GO commands
+go get github.com/ethereum/go-ethereum
+go get github.com/victoryeo/golang-web3/example
+go run main.go
