@@ -16,6 +16,12 @@ abigen --abi contracts/Example.abi --pkg example --out example.go
 ```
 
 #### GO commands
+````
 go get github.com/ethereum/go-ethereum
+````
+````
 go get github.com/victoryeo/golang-web3/example
+````
+````
 go run main.go
+````
