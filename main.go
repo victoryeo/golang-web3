@@ -23,17 +23,17 @@ func main() {
 	/**
 	 * Connecting to provider
 	 */
-	client, err := ethclient.Dial("wss://rinkeby.infura.io/ws")
+	client, err := ethclient.Dial("https://eth-rinkeby.alchemyapi.io/v2/<apikey>")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// with no 0x
-	exampleAddress := "ecadc59908d98c937c3cf9ffefad43145d74923c"
+	exampleAddress := "927Efa57F32bbD680eEd92C053D7D541bE0E7684"
 
 	// with no 0x
-	priv := "117bbcf6bdc3a8e57f311a2b4f513c25b20e3ad4606486d7a927d8074872c2af"
+	priv := "<privatekey>"
 
 	key, err := crypto.HexToECDSA(priv)
 
@@ -43,21 +43,24 @@ func main() {
 
 	contractAddress := common.HexToAddress(exampleAddress)
 	exampleClient, err := example.NewExample(contractAddress, client)
+	fmt.Println("client:", exampleClient)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	auth := bind.NewKeyedTransactor(key)
+	fmt.Println("auth:", auth)
 
-	// not sure why I have to set this when using testrpc
-	// var nonce int64 = 0
-	// auth.Nonce = big.NewInt(nonce)
+	// set the gas price manually
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	auth.GasPrice = gasPrice
 
 	/**
 	 * Calling contract method
 	 */
 	tx, err := exampleClient.Hello(auth, "hello")
+	fmt.Println("tx:", tx)
 
 	if err != nil {
 		log.Fatal(err)
