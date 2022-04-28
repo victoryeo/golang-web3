@@ -12,7 +12,7 @@ solc --abi contracts/Example.sol > contracts/Example.abi
 ABI to GO package
 
 ```bash
-abigen --abi contracts/Example.abi --pkg example --out example.go
+abigen --abi contracts/Example.abi --pkg example --out example/example.go
 ```
 
 #### GO commands
