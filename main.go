@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/victoryeo/golang-web3/example"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -29,7 +30,7 @@ func main() {
 	}
 
 	// with no 0x
-	greeterAddress := "ecadc59908d98c937c3cf9ffefad43145d74923c"
+	exampleAddress := "ecadc59908d98c937c3cf9ffefad43145d74923c"
 
 	// with no 0x
 	priv := "117bbcf6bdc3a8e57f311a2b4f513c25b20e3ad4606486d7a927d8074872c2af"
@@ -40,8 +41,8 @@ func main() {
 	 * Connecting to contract at an address
 	 */
 
-	contractAddress := common.HexToAddress(greeterAddress)
-	greeterClient, err := hello.NewGreeter(contractAddress, client)
+	contractAddress := common.HexToAddress(exampleAddress)
+	exampleClient, err := example.NewExample(contractAddress, client)
 
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +57,7 @@ func main() {
 	/**
 	 * Calling contract method
 	 */
-	tx, err := greeterClient.Greet(auth, "hello")
+	tx, err := exampleClient.Hello(auth, "hello")
 
 	if err != nil {
 		log.Fatal(err)
@@ -82,14 +83,14 @@ func main() {
 		return
 	}
 
-	abiPath, _ := filepath.Abs("./contracts/Greeter.abi")
+	abiPath, _ := filepath.Abs("./contracts/Example.abi")
 	file, err := ioutil.ReadFile(abiPath)
 
 	if err != nil {
 		fmt.Println("Failed to read file:", err)
 	}
 
-	greeterAbi, err := abi.JSON(strings.NewReader(string(file)))
+	exampleAbi, err := abi.JSON(strings.NewReader(string(file)))
 	if err != nil {
 		fmt.Println("Invalid abi:", err)
 	}
@@ -99,20 +100,20 @@ func main() {
 		case err := <-sub.Err():
 			log.Fatal(err)
 		case log := <-ch:
-			var greetEvent struct {
+			var helloEvent struct {
 				Name  string
 				Count *big.Int
 			}
 
-			err = greeterAbi.Unpack(&greetEvent, "_Greet", log.Data)
+			err, _ := exampleAbi.Unpack("Hello", log.Data)
 
 			if err != nil {
 				fmt.Println("Failed to unpack:", err)
 			}
 
 			fmt.Println("Contract:", log.Address.Hex())
-			fmt.Println("Name:", greetEvent.Name)
-			fmt.Println("Count:", greetEvent.Count)
+			fmt.Println("Name:", helloEvent.Name)
+			fmt.Println("Count:", helloEvent.Count)
 		}
 	}
 
