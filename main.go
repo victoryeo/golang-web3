@@ -23,7 +23,8 @@ func main() {
 	/**
 	 * Connecting to provider
 	 */
-	client, err := ethclient.Dial("https://eth-rinkeby.alchemyapi.io/v2/<apikey>")
+	//client, err := ethclient.Dial("https://eth-rinkeby.alchemyapi.io/v2/<apikey>")
+	client, err := ethclient.Dial("wss://eth-rinkeby.alchemyapi.io/v2/<apikey>")
 
 	if err != nil {
 		log.Fatal(err)
@@ -76,10 +77,10 @@ func main() {
 		Addresses: []common.Address{contractAddress},
 	}
 
-	var ch = make(chan types.Log)
+	var chLog = make(chan types.Log)
 	ctx := context.Background()
 
-	sub, err := client.SubscribeFilterLogs(ctx, query, ch)
+	sub, err := client.SubscribeFilterLogs(ctx, query, chLog)
 
 	if err != nil {
 		log.Println("Subscribe:", err)
@@ -102,21 +103,23 @@ func main() {
 		select {
 		case err := <-sub.Err():
 			log.Fatal(err)
-		case log := <-ch:
+		case log := <-chLog:
 			var helloEvent struct {
 				Name  string
 				Count *big.Int
 			}
 
-			err, _ := exampleAbi.Unpack("Hello", log.Data)
+			out, err := exampleAbi.Unpack("Hello", log.Data)
 
 			if err != nil {
 				fmt.Println("Failed to unpack:", err)
 			}
+			fmt.Println("After unpack:", out)
 
 			fmt.Println("Contract:", log.Address.Hex())
-			fmt.Println("Name:", helloEvent.Name)
-			fmt.Println("Count:", helloEvent.Count)
+			fmt.Println("Name:", out[0])
+			fmt.Println("Count:", out[1])
+			fmt.Println("HelloEvent:", helloEvent)
 		}
 	}
 
